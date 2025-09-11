@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: evently
+    ports:
+      - 5432:5432  
+
+  cache:
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+  
+  nginx:
+    image: nginx:alpine
+    container_name: evently_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
