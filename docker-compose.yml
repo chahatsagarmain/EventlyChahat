@@ -9,6 +9,8 @@ services:
       POSTGRES_DB: evently
     ports:
       - 5432:5432  
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   cache:
     image: redis
@@ -29,3 +31,6 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+volumes:
+  pgdata:

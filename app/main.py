@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.db.session import engine, Base
-from app.api.v1 import auth, users, events, seats , bookings
+from app.api.v1 import auth, users, events, seats , bookings, analytics
 from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
@@ -21,6 +21,7 @@ app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 app.include_router(events.router, prefix="/api/v1/events", tags=["events"])
 app.include_router(seats.router, prefix="/api/v1", tags=["seats"])  # seats router uses /events/... paths
 app.include_router(bookings.router, prefix="/api/v1/bookings", tags=["bookings"])
+app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
 
 app.add_middleware(
     CORSMiddleware,

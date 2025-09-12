@@ -73,13 +73,12 @@ async def update_event(event_id: int, event_update: EventUpdate, db: AsyncSessio
         return None
     
     seats_to_add = []
-    
+    if event_update.capacity != None and event_update.capacity < ev.capacity:
+        return None
     if event_update.capacity != None and event_update.capacity > ev.capacity:
         for i in range(ev.capacity, event_update.capacity):  
             seats_to_add.append({"event_id": event_id, "seat_number": i + 1})
         ev.capacity = event_update.capacity
-    elif event_update.capacity != None and event_update.capacity < ev.capacity:
-        return None
     if event_update.venue != None:
         ev.venue = event_update.venue
     
