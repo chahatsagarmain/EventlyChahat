@@ -26,7 +26,6 @@ def decode_access_token(token: str) -> dict:
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)) -> User:
     payload = decode_access_token(token)
     user_id = payload.get("user_id")
-    print(user_id)
     if not user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload")
     user = await get_user(db, int(user_id))

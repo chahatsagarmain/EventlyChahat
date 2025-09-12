@@ -1,3 +1,4 @@
+import os
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -9,7 +10,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 1 day
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
-
+    MAILGUN_API_KEY: str = os.getenv("MAILGUN_API_KEY")
+    MAILGUN_DOMAIN: str = os.getenv("MAILGUN_DOMAIN")
     class Config:
         env_file = ".env"
 

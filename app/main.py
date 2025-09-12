@@ -1,10 +1,12 @@
-import uvicorn
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.db.session import engine, Base
-from app.api.v1 import auth, users, events, seats , bookings, analytics
+from app.api.v1 import auth, users, events, seats , bookings, analytics , waitlist
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
+load_dotenv("./.env")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,6 +24,7 @@ app.include_router(events.router, prefix="/api/v1/events", tags=["events"])
 app.include_router(seats.router, prefix="/api/v1", tags=["seats"])  # seats router uses /events/... paths
 app.include_router(bookings.router, prefix="/api/v1/bookings", tags=["bookings"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
+app.include_router(waitlist.router , prefix="/api/v1/waitlist", tags=["waitlist"])
 
 app.add_middleware(
     CORSMiddleware,

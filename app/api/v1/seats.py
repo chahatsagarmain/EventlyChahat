@@ -16,15 +16,22 @@ router = APIRouter()
 @router.get("/events/{event_id}/seats", response_model=List[SeatOut])
 async def list_seats_route(event_id: int, db: AsyncSession = Depends(get_db)):
     key = redis.make_cache_key("event:seats"  , event_id)
-    cached = await redis.get_cache(key)
-    if cached:
-        return cached
+    try:
+        cached = await redis.get_cache(key)
+        if cached:
+            return cached
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
+    
     ev = await get_event(db, event_id)
     if not ev:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
     seats = await list_seats_for_event(db, event_id)
     seats = rows_to_dict_list(seats)
-    await redis.set_cache(key , seats)
+    try:
+        await redis.set_cache(key , seats)
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     return seats
 
 
@@ -48,5 +55,8 @@ async def book_seat_route(event_id : int , seat_number : int, db: AsyncSession =
         seat_number=seat_num,
         created_at=booked.created_at
     )
-    await redis.delete_booking_cache(event_id , current_user.id)
+    try:
+        await redis.delete_booking_cache(event_id , current_user.id)
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     return response

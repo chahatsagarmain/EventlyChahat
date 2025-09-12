@@ -1,7 +1,9 @@
 import redis.asyncio as redis
 import json
 import asyncio
+from typing import Optional , Dict
 from app.core.config import settings
+from datetime import datetime
 
 redis_client = redis.Redis(
     host=settings.REDIS_HOST, 
@@ -54,3 +56,18 @@ async def delete_event_cache(event_id):
         delete_cache_with_prefix(f"event:bookings:{event_id}"),
         delete_cache_with_prefix(f"event:seats:{event_id}")
     )
+
+async def insert_in_waitlist(list_key: str, value: dict, score: float, expire_at: int):
+    """Insert value into waitlist (ZSET) with score and expire_at timestamp"""
+    resp = await redis_client.zadd(list_key, {json.dumps(value): score})
+    await redis_client.expireat(list_key, expire_at)
+
+async def fetch_from_waitlist(list_key: str, start: int = 0, end: int = 0) :
+    """Fetch items from waitlist (ZSET)"""
+    items = await redis_client.zrange(list_key, start, end)
+    # print(items)
+    return [json.loads(val) for val in items]
+
+async def delete_from_waitlist(list_key: str, value: dict):
+    """Delete a value from waitlist (ZSET)"""
+    await redis_client.zrem(list_key, json.dumps(value))

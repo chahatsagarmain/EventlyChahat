@@ -28,6 +28,10 @@ async def create_event_route(user: Annotated[User , Depends(get_current_user)], 
     created = await event.create_event(db, ev , user.id)
     if not created:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST , detail="ENSURE THE EVENT IS UNIQUE")
+    try:
+        await redis.delete_event_cache(created.id)
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     return created
 
 @router.delete("/{event_id}", status_code=204, dependencies=[Depends(admin_required)])
@@ -35,8 +39,11 @@ async def delete_event_route(event_id: int = Path(..., gt=0), db: AsyncSession =
     ev = await event.get_event(db, event_id)
     if not ev:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
-    await event.delete_event(db, ev)
-    await redis.delete_event_cache(event_id)
+    try:
+        await event.delete_event(db, ev)
+        await redis.delete_event_cache(event_id)
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     return True
 
 @router.get("/", response_model=List[EventOut])
@@ -50,34 +57,48 @@ async def list_events_route(
     db: AsyncSession = Depends(get_db)
 ):
     key = redis.make_cache_key("event" , name , venue , from_date , to_date , limit , offset)
-    cached = await redis.get_cache(key)
-    if cached != None:
-        return cached
+    try:
+        cached = await redis.get_cache(key)
+        if cached != None:
+            return cached
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     events = await event.list_events(db, name=name, venue=venue, from_date=from_date, to_date=to_date, limit=limit, offset=offset)
     events = rows_to_dict_list(events)
-    await redis.set_cache(key , events)
+    try:
+        await redis.set_cache(key , events)
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     return events
 
 @router.get("/{event_id}")
 async def get_event_route(event_id: int = Path(..., gt=0), db: AsyncSession = Depends(get_db)):
     key = redis.make_cache_key("event" , event_id)
-    cached = await redis.get_cache(key)
-    print(cached)
-    if cached != None:
-        return {**cached , "cached" : True}
+    try:
+        cached = await redis.get_cache(key)
+        if cached != None:
+            return {**cached , "cached" : True}
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     ev = await event.get_event(db, event_id)
     if not ev:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="EVENT NOT FOUND")
     ev = row_to_dict(ev)
-    await redis.set_cache(key,ev)
+    try:
+        await redis.set_cache(key,ev)
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     return ev
 
 @router.get("/bookings/{event_id}")
 async def get_event_bookings(event_id : int = Path(... , gt=0) , db: AsyncSession = Depends(get_db)):
     key = redis.make_cache_key("event:bookings" , event_id)
-    cached = await redis.get_cache(key)
-    if cached != None:
-        return cached
+    try:
+        cached = await redis.get_cache(key)
+        if cached != None:
+            return cached
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     ev = await event.get_bookings(db , event_id)
     if ev == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND , detail="EVENT NOT FOUND")
@@ -85,7 +106,10 @@ async def get_event_bookings(event_id : int = Path(... , gt=0) , db: AsyncSessio
     valid_bookings = [booking for booking in bookings if booking.status == "BOOKED"]
     ev.bookings = valid_bookings
     ev = row_to_dict(ev)
-    await redis.set_cache(key,ev)
+    try:
+        await redis.set_cache(key,ev)
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     return ev
 
 @router.put("/{event_id}" , dependencies=[Depends(admin_required)])
@@ -93,6 +117,9 @@ async def update_event(event_update: EventUpdate , event_id : int = Path(... , g
     updated_event = await event.update_event(event_id , event_update , db)
     if updated_event == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST , detail="INVALID UPDATED VALUES")
-    await redis.delete_event_cache(event_id)
+    try:
+        await redis.delete_event_cache(event_id)
+    except Exception as e:
+        print(f"CACHE fetch error : {str(e)}")
     return updated_event
     
