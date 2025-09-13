@@ -1,4 +1,10 @@
 services:
+  app:
+    build: ./
+    depends_on:
+      - db
+    ports:
+      - 8000:8000
   db:
     image: postgres
     restart: always
@@ -21,6 +27,8 @@ services:
   nginx:
     image: nginx:alpine
     container_name: evently_nginx
+    depends_on:
+      - app
     ports:
       - "80:80"
     volumes:
