@@ -17,6 +17,7 @@ EventlyChahat is a high-performance, asynchronous event management and booking p
 - **🐳 Docker Ready and Docker Swarm**: Complete containerization with Docker Compose and Horizontal scaling with docker swarm for backend service .   
 
 ## Architecture & Design Decisions
+<img width="768" height="368" alt="diagram-export-9-14-2025-8_54_22-PM" src="https://github.com/user-attachments/assets/ce3fb0d4-d661-4dec-afd9-b5dfde9a396b" />
 
 ### Major Design Decisions
 
