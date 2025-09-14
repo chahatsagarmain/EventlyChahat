@@ -407,7 +407,8 @@ Authorization: Bearer <admin-token>
     └── GET /summary            # Quick summary (admin)
 ```
 
-## Database Schema
+## Database Schema and ER Diagram 
+<img width="796" height="727" alt="eg" src="https://github.com/user-attachments/assets/39669fea-c157-4898-a6b9-66e267cd8387" />
 
 ### Core Entities
 
@@ -610,4 +611,4 @@ For support and questions:
 
 ---
 
-**EventlyChahat** - Built with ❤️ using FastAPI and modern Python async patterns.
+**EventlyChahat** - Built with ❤️ using FastAPI.
