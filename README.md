@@ -120,6 +120,54 @@ EventlyChahat is a high-performance, asynchronous event management and booking p
 - **Web Server**: Nginx (reverse proxy & load balancer)
 - **Admin Interface**: Adminer
 
+## Database Schema and ER Diagram 
+<img width="796" height="727" alt="eg" src="https://github.com/user-attachments/assets/39669fea-c157-4898-a6b9-66e267cd8387" />
+
+### Core Entities
+
+#### Users
+- `id` (Primary Key)
+- `email` (Unique)
+- `full_name`
+- `hashed_password`
+- `is_admin` (Boolean)
+- `created_at`
+
+#### Events
+- `id` (Primary Key)
+- `name`
+- `venue`
+- `description`
+- `start_time`
+- `end_time`
+- `capacity`
+- `created_by` (Foreign Key → Users)
+- `created_at`
+
+#### Seats
+- `id` (Primary Key)
+- `seat_number`
+- `event_id` (Foreign Key → Events)
+- `status` (AVAILABLE/BOOKED)
+- `extradata` (JSON)
+- `created_at`
+
+#### Bookings
+- `id` (Primary Key)
+- `user_id` (Foreign Key → Users)
+- `event_id` (Foreign Key → Events)
+- `seat_id` (Foreign Key → Seats)
+- `status` (PENDING/BOOKED/CANCELLED)
+- `created_at`
+
+### Relationships
+- Users → Events (One-to-Many) - Creator relationship
+- Users → Bookings (One-to-Many) - User bookings
+- Events → Seats (One-to-Many) - Event seats
+- Events → Bookings (One-to-Many) - Event bookings
+- Seats → Bookings (One-to-One) - Seat booking
+
+
 ## Project Structure
 
 ```
@@ -406,53 +454,6 @@ Authorization: Bearer <admin-token>
     ├── GET /venue-analytics    # Venue analytics (admin)
     └── GET /summary            # Quick summary (admin)
 ```
-
-## Database Schema and ER Diagram 
-<img width="796" height="727" alt="eg" src="https://github.com/user-attachments/assets/39669fea-c157-4898-a6b9-66e267cd8387" />
-
-### Core Entities
-
-#### Users
-- `id` (Primary Key)
-- `email` (Unique)
-- `full_name`
-- `hashed_password`
-- `is_admin` (Boolean)
-- `created_at`
-
-#### Events
-- `id` (Primary Key)
-- `name`
-- `venue`
-- `description`
-- `start_time`
-- `end_time`
-- `capacity`
-- `created_by` (Foreign Key → Users)
-- `created_at`
-
-#### Seats
-- `id` (Primary Key)
-- `seat_number`
-- `event_id` (Foreign Key → Events)
-- `status` (AVAILABLE/BOOKED)
-- `extradata` (JSON)
-- `created_at`
-
-#### Bookings
-- `id` (Primary Key)
-- `user_id` (Foreign Key → Users)
-- `event_id` (Foreign Key → Events)
-- `seat_id` (Foreign Key → Seats)
-- `status` (PENDING/BOOKED/CANCELLED)
-- `created_at`
-
-### Relationships
-- Users → Events (One-to-Many) - Creator relationship
-- Users → Bookings (One-to-Many) - User bookings
-- Events → Seats (One-to-Many) - Event seats
-- Events → Bookings (One-to-Many) - Event bookings
-- Seats → Bookings (One-to-One) - Seat booking
 
 ## Development
 
