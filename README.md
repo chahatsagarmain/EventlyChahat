@@ -252,6 +252,7 @@ Content-Type: application/json
 ```
 
 #### Login
+If your using the OpenApI docs then you can directly "Authorise" button .
 ```http
 POST /api/v1/auth/token
 Content-Type: application/x-www-form-urlencoded

@@ -20,10 +20,10 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 def create_access_token(data: dict):
-    to_encode = data
+    to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    return jwt.encode(payload=to_encode, algorithm=settings.JWT_ALGORITHM , key=settings.JWT_SECRET )
+    return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
 @router.post("/register", response_model=UserOut, status_code=201)
 async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
