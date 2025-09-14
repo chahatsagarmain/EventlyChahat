@@ -525,7 +525,7 @@ docker-compose up --build
    - Enable HTTP/2
    - Set up monitoring and logging
 
-## Monitoring & Observability
+<!-- ## Monitoring & Observability
 
 ### Health Checks
 
@@ -544,7 +544,7 @@ GET /health
 - Structured JSON logging
 - Request/response logging
 - Error tracking and alerting
-
+-->
 ## API Rate Limiting & Security
 
 ### Rate Limiting Implementation
