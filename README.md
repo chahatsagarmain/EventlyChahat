@@ -21,7 +21,7 @@ EventlyChahat is a high-performance, asynchronous event management and booking p
 
 ### Major Design Decisions
 
-#### 1. **Asynchronous Architecture**
+#### 0. **Pessimistic Locking**
 - **Decision**: Use proper locking to avoid double booking and race conditions 
 - **Reference**: I stumbled upon a great video by Hussein Nasser ( My fav. tech youtuber for backend ) : https://www.youtube.com/watch?v=I8IlO0hCSgY and https://www.youtube.com/watch?v=_95dCYv2Xv4, this exact video solves our exact problem using pessimistic locking . 
 - **Trade-offs**: 
